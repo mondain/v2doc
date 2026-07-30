@@ -110,7 +110,15 @@ if(V2DOC_ENABLE_INFERENCE)
     target_link_libraries(v2doc PRIVATE v2doc_inference)
 
     set(BUILD_TESTING "${V2DOC_BUILD_TESTING}" CACHE BOOL "" FORCE)
+
+    install(TARGETS v2doc RUNTIME DESTINATION bin)
 endif()
+
+install(
+    PROGRAMS scripts/download-models.sh
+    DESTINATION bin
+    RENAME v2doc-download-models
+)
 
 target_link_libraries(v2doc_core PUBLIC nlohmann_json::nlohmann_json)
 
