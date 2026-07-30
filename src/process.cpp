@@ -47,8 +47,9 @@ ProcessResult PosixProcessRunner::run(
         close_descriptor(stderr_pipe[0]);
         if (::dup2(stderr_pipe[1], STDERR_FILENO) < 0) {
             constexpr char message[] = "dup2 failed\n";
-            static_cast<void>(
-                ::write(STDERR_FILENO, message, sizeof(message) - 1U));
+            const auto write_result =
+                ::write(STDERR_FILENO, message, sizeof(message) - 1U);
+            static_cast<void>(write_result);
             _exit(126);
         }
         close_descriptor(stderr_pipe[1]);
@@ -62,8 +63,9 @@ ProcessResult PosixProcessRunner::run(
         ::execvp(argv.front(), argv.data());
 
         constexpr char message[] = "execvp failed\n";
-        static_cast<void>(
-            ::write(STDERR_FILENO, message, sizeof(message) - 1U));
+        const auto write_result =
+            ::write(STDERR_FILENO, message, sizeof(message) - 1U);
+        static_cast<void>(write_result);
         _exit(127);
     }
 
@@ -113,4 +115,3 @@ ProcessResult PosixProcessRunner::run(
 }
 
 }  // namespace v2doc
-

@@ -107,3 +107,33 @@ target_compile_options(v2doc_thumbnailer_tests PRIVATE
     -Wshadow
 )
 add_test(NAME thumbnailer COMMAND v2doc_thumbnailer_tests)
+
+add_executable(v2doc_inference_text_tests test_inference_text.cpp)
+target_link_libraries(v2doc_inference_text_tests PRIVATE
+    v2doc_core
+    Catch2::Catch2WithMain
+)
+target_compile_options(v2doc_inference_text_tests PRIVATE
+    -Wall
+    -Wextra
+    -Wpedantic
+    -Wconversion
+    -Wshadow
+)
+add_test(NAME inference_text COMMAND v2doc_inference_text_tests)
+
+if(V2DOC_ENABLE_INFERENCE)
+    add_executable(v2doc_inference_adapter_tests test_inference_adapters.cpp)
+    target_link_libraries(v2doc_inference_adapter_tests PRIVATE
+        v2doc_inference
+        Catch2::Catch2WithMain
+    )
+    target_compile_options(v2doc_inference_adapter_tests PRIVATE
+        -Wall
+        -Wextra
+        -Wpedantic
+        -Wconversion
+        -Wshadow
+    )
+    add_test(NAME inference_adapters COMMAND v2doc_inference_adapter_tests)
+endif()
