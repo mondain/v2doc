@@ -11,7 +11,9 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 include(CTest)
 
 add_library(v2doc_core
+    src/audio.cpp
     src/cli.cpp
+    src/process.cpp
 )
 target_include_directories(v2doc_core PUBLIC
     "${PROJECT_SOURCE_DIR}/include"
