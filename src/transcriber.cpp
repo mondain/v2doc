@@ -68,7 +68,7 @@ TranscriptResult WhisperTranscriber::transcribe(
     const std::string language =
         options.language.value_or("auto");
     parameters.language = language.c_str();
-    parameters.detect_language = !options.language.has_value();
+    parameters.detect_language = false;
 
     const auto status = whisper_full(
         context.get(),
@@ -119,4 +119,3 @@ TranscriptResult WhisperTranscriber::transcribe(
 }
 
 }  // namespace v2doc
-

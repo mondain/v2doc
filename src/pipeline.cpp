@@ -76,7 +76,22 @@ void validate_options(
             "thumbnail width must be greater than zero");
     }
 
-    const auto ffmpeg = runner.run({"ffmpeg", "-version"});
+    const auto ffmpeg = runner.run({
+        "ffmpeg",
+        "-nostdin",
+        "-hide_banner",
+        "-loglevel",
+        "error",
+        "-f",
+        "lavfi",
+        "-i",
+        "anullsrc",
+        "-t",
+        "0",
+        "-f",
+        "null",
+        "-",
+    });
     if (ffmpeg.exit_code != 0) {
         throw std::runtime_error(process_failure(
             "FFmpeg is unavailable", ffmpeg));

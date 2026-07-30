@@ -132,7 +132,7 @@ public:
     v2doc::ProcessResult run(
         const std::vector<std::string> &args) const override {
         calls.push_back(args);
-        if (args.size() == 2U && args[1] == "-version") {
+        if (!args.empty() && args.back() == "-") {
             return available ? v2doc::ProcessResult{}
                              : v2doc::ProcessResult{127, "not found"};
         }
