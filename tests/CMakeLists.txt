@@ -64,3 +64,32 @@ target_compile_options(v2doc_segment_merger_tests PRIVATE
     -Wshadow
 )
 add_test(NAME segment_merger COMMAND v2doc_segment_merger_tests)
+
+add_executable(v2doc_report_tests test_report.cpp)
+target_link_libraries(v2doc_report_tests PRIVATE
+    v2doc_core
+    Catch2::Catch2WithMain
+    nlohmann_json::nlohmann_json
+)
+target_compile_options(v2doc_report_tests PRIVATE
+    -Wall
+    -Wextra
+    -Wpedantic
+    -Wconversion
+    -Wshadow
+)
+add_test(NAME report COMMAND v2doc_report_tests)
+
+add_executable(v2doc_output_transaction_tests test_output_transaction.cpp)
+target_link_libraries(v2doc_output_transaction_tests PRIVATE
+    v2doc_core
+    Catch2::Catch2WithMain
+)
+target_compile_options(v2doc_output_transaction_tests PRIVATE
+    -Wall
+    -Wextra
+    -Wpedantic
+    -Wconversion
+    -Wshadow
+)
+add_test(NAME output_transaction COMMAND v2doc_output_transaction_tests)
