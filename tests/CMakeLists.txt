@@ -136,4 +136,18 @@ if(V2DOC_ENABLE_INFERENCE)
         -Wshadow
     )
     add_test(NAME inference_adapters COMMAND v2doc_inference_adapter_tests)
+
+    add_executable(v2doc_pipeline_tests test_pipeline.cpp)
+    target_link_libraries(v2doc_pipeline_tests PRIVATE
+        v2doc_inference
+        Catch2::Catch2WithMain
+    )
+    target_compile_options(v2doc_pipeline_tests PRIVATE
+        -Wall
+        -Wextra
+        -Wpedantic
+        -Wconversion
+        -Wshadow
+    )
+    add_test(NAME pipeline COMMAND v2doc_pipeline_tests)
 endif()

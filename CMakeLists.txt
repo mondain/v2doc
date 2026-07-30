@@ -27,6 +27,7 @@ add_library(v2doc_core
     src/cli.cpp
     src/inference_text.cpp
     src/output_transaction.cpp
+    src/pipeline.cpp
     src/process.cpp
     src/report.cpp
     src/segment_merger.cpp
@@ -43,6 +44,7 @@ target_compile_options(v2doc_core PRIVATE
     -Wshadow
 )
 if(V2DOC_ENABLE_INFERENCE)
+    set(BUILD_TESTING OFF CACHE BOOL "" FORCE)
     set(WHISPER_BUILD_TESTS OFF CACHE BOOL "" FORCE)
     set(WHISPER_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
     set(WHISPER_BUILD_SERVER OFF CACHE BOOL "" FORCE)
@@ -96,6 +98,18 @@ if(V2DOC_ENABLE_INFERENCE)
         whisper
         sherpa-onnx-c-api
     )
+
+    add_executable(v2doc src/main.cpp)
+    target_compile_options(v2doc PRIVATE
+        -Wall
+        -Wextra
+        -Wpedantic
+        -Wconversion
+        -Wshadow
+    )
+    target_link_libraries(v2doc PRIVATE v2doc_inference)
+
+    set(BUILD_TESTING "${V2DOC_BUILD_TESTING}" CACHE BOOL "" FORCE)
 endif()
 
 target_link_libraries(v2doc_core PUBLIC nlohmann_json::nlohmann_json)
