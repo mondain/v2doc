@@ -6,6 +6,7 @@ readonly WHISPER_URL="https://huggingface.co/ggerganov/whisper.cpp/resolve/main/
 readonly WHISPER_SHA256="1be3a9b2063867b937e64e2ec7483364a79917e157fa98c5d94b5c1fffea987b"
 readonly SEGMENTATION_URL="https://github.com/k2-fsa/sherpa-onnx/releases/download/speaker-segmentation-models/sherpa-onnx-pyannote-segmentation-3-0.tar.bz2"
 readonly SEGMENTATION_SHA256="24615ee884c897d9d2ba09bb4d30da6bb1b15e685065962db5b02e76e4996488"
+readonly SEGMENTATION_MODEL_SHA256="220ad67ca923bef2fa91f2390c786097bf305bceb5e261d4af67b38e938e1079"
 readonly EMBEDDING_URL="https://github.com/k2-fsa/sherpa-onnx/releases/download/speaker-recongition-models/3dspeaker_speech_eres2net_base_sv_zh-cn_3dspeaker_16k.onnx"
 readonly EMBEDDING_SHA256="1a331345f04805badbb495c775a6ddffcdd1a732567d5ec8b3d5749e3c7a5e4b"
 readonly SEGMENTATION_NAME="sherpa-onnx-pyannote-segmentation-3-0"
@@ -78,7 +79,9 @@ trap cleanup EXIT
 verify_checksum() {
     local path="$1"
     local expected="$2"
-    printf '%s  %s\n' "$expected" "$path" | sha256sum --check --status
+    local actual
+    actual="$(sha256sum -- "$path")"
+    [[ "${actual%% *}" == "$expected" ]]
 }
 
 install_file() {
@@ -117,11 +120,11 @@ install_file \
     "$model_dir/ggml-small.bin"
 
 segmentation_dir="$model_dir/$SEGMENTATION_NAME"
-segmentation_marker="$segmentation_dir/.v2doc-archive-sha256"
 if [[ -e "$segmentation_dir" ]]; then
     if [[ -f "$segmentation_dir/model.onnx" ]] &&
-       [[ -f "$segmentation_marker" ]] &&
-       [[ "$(<"$segmentation_marker")" == "$SEGMENTATION_SHA256" ]]; then
+       verify_checksum \
+           "$segmentation_dir/model.onnx" \
+           "$SEGMENTATION_MODEL_SHA256"; then
         printf '%s\n' "Speaker segmentation model already verified: $segmentation_dir"
     else
         printf '%s\n' \
@@ -151,7 +154,13 @@ else
             "download-models.sh: segmentation archive has an unexpected layout" >&2
         exit 1
     fi
-    printf '%s\n' "$SEGMENTATION_SHA256" >"$extracted_model/.v2doc-archive-sha256"
+    if ! verify_checksum \
+        "$extracted_model/model.onnx" \
+        "$SEGMENTATION_MODEL_SHA256"; then
+        printf '%s\n' \
+            "download-models.sh: extracted segmentation model checksum failed" >&2
+        exit 1
+    fi
     mv "$extracted_model" "$segmentation_dir"
     printf '%s\n' "Installed speaker segmentation model: $segmentation_dir"
 fi

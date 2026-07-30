@@ -73,27 +73,32 @@ bool is_v2doc_report(const std::filesystem::path &directory) {
            read_file(directory / ".v2doc-report") == report_marker;
 }
 
-OutputTransaction::OutputTransaction(
-    std::filesystem::path target, const bool force)
-    : target_(std::move(target)), force_(force) {
-    if (target_.empty()) {
+void validate_output_target(
+    const std::filesystem::path &target, const bool force) {
+    if (target.empty()) {
         throw std::invalid_argument("output directory cannot be empty");
     }
-
-    if (std::filesystem::exists(target_)) {
-        if (!force_) {
-            throw std::runtime_error(
-                "output directory already exists; use --force to replace a "
-                "v2doc report");
-        }
-        const bool empty_directory =
-            std::filesystem::is_directory(target_) &&
-            std::filesystem::is_empty(target_);
-        if (!empty_directory && !is_v2doc_report(target_)) {
-            throw std::runtime_error(
-                "refusing to replace a directory that is not a v2doc report");
-        }
+    if (!std::filesystem::exists(target)) {
+        return;
     }
+    if (!force) {
+        throw std::runtime_error(
+            "output directory already exists; use --force to replace a "
+            "v2doc report");
+    }
+    const bool empty_directory =
+        std::filesystem::is_directory(target) &&
+        std::filesystem::is_empty(target);
+    if (!empty_directory && !is_v2doc_report(target)) {
+        throw std::runtime_error(
+            "refusing to replace a directory that is not a v2doc report");
+    }
+}
+
+OutputTransaction::OutputTransaction(
+    std::filesystem::path target, const bool force)
+    : target_(std::move(target)) {
+    validate_output_target(target_, force);
 
     const auto parent =
         target_.has_parent_path() ? target_.parent_path()
@@ -148,4 +153,3 @@ void OutputTransaction::commit() {
 }
 
 }  // namespace v2doc
-

@@ -75,6 +75,7 @@ void validate_options(
         throw std::runtime_error(
             "thumbnail width must be greater than zero");
     }
+    validate_output_target(options.output, options.force);
 
     const auto ffmpeg = runner.run({
         "ffmpeg",

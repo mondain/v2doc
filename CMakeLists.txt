@@ -22,7 +22,7 @@ if(NOT V2DOC_ENABLE_INFERENCE)
     FetchContent_MakeAvailable(nlohmann_json)
 endif()
 
-add_library(v2doc_core
+add_library(v2doc_core STATIC
     src/audio.cpp
     src/cli.cpp
     src/inference_text.cpp
@@ -45,6 +45,8 @@ target_compile_options(v2doc_core PRIVATE
 )
 if(V2DOC_ENABLE_INFERENCE)
     set(BUILD_TESTING OFF CACHE BOOL "" FORCE)
+    set(V2DOC_SAVED_BUILD_SHARED_LIBS "${BUILD_SHARED_LIBS}")
+    set(BUILD_SHARED_LIBS ON CACHE BOOL "" FORCE)
     set(WHISPER_BUILD_TESTS OFF CACHE BOOL "" FORCE)
     set(WHISPER_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
     set(WHISPER_BUILD_SERVER OFF CACHE BOOL "" FORCE)
@@ -79,7 +81,7 @@ if(V2DOC_ENABLE_INFERENCE)
     )
     FetchContent_MakeAvailable(sherpa_onnx)
 
-    add_library(v2doc_inference
+    add_library(v2doc_inference STATIC
         src/diarizer.cpp
         src/transcriber.cpp
     )
@@ -98,7 +100,6 @@ if(V2DOC_ENABLE_INFERENCE)
         whisper
         sherpa-onnx-c-api
     )
-
     add_executable(v2doc src/main.cpp)
     target_compile_options(v2doc PRIVATE
         -Wall
@@ -110,15 +111,16 @@ if(V2DOC_ENABLE_INFERENCE)
     target_link_libraries(v2doc PRIVATE v2doc_inference)
 
     set(BUILD_TESTING "${V2DOC_BUILD_TESTING}" CACHE BOOL "" FORCE)
-
-    install(TARGETS v2doc RUNTIME DESTINATION bin)
+    if(V2DOC_SAVED_BUILD_SHARED_LIBS STREQUAL "")
+        unset(BUILD_SHARED_LIBS CACHE)
+    else()
+        set(
+            BUILD_SHARED_LIBS
+            "${V2DOC_SAVED_BUILD_SHARED_LIBS}"
+            CACHE BOOL "" FORCE
+        )
+    endif()
 endif()
-
-install(
-    PROGRAMS scripts/download-models.sh
-    DESTINATION bin
-    RENAME v2doc-download-models
-)
 
 target_link_libraries(v2doc_core PUBLIC nlohmann_json::nlohmann_json)
 

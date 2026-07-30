@@ -5,6 +5,8 @@
 namespace v2doc {
 
 bool is_v2doc_report(const std::filesystem::path &directory);
+void validate_output_target(
+    const std::filesystem::path &target, bool force);
 
 class OutputTransaction {
 public:
@@ -22,9 +24,7 @@ public:
 private:
     std::filesystem::path target_;
     std::filesystem::path staging_;
-    bool force_{};
     bool committed_{};
 };
 
 }  // namespace v2doc
-

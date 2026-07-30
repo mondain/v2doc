@@ -334,6 +334,26 @@ TEST_CASE("fatal transcription failure does not install output") {
     CHECK_FALSE(std::filesystem::exists(options.output));
 }
 
+TEST_CASE("unsafe force target is rejected before transcription") {
+    TempDirectory temp;
+    FakeRunner runner;
+    FakeTranscriber transcriber;
+    FakeDiarizer diarizer;
+    FakeThumbnailer thumbnails;
+    v2doc::Pipeline pipeline(runner, transcriber, diarizer, thumbnails);
+    const auto output = temp.path() / "unrelated";
+    write_file(output / "keep.txt", "keep");
+    auto options =
+        valid_options(temp.path(), temp.path() / "movie.mp4", output);
+    options.force = true;
+
+    CHECK_THROWS_WITH(
+        pipeline.run(options),
+        "refusing to replace a directory that is not a v2doc report");
+    CHECK(transcriber.calls == 0);
+    CHECK(read_file(output / "keep.txt") == "keep");
+}
+
 TEST_CASE("real FFmpeg extraction and thumbnails produce a portable report") {
     TempDirectory temp;
     v2doc::PosixProcessRunner runner;
