@@ -93,3 +93,17 @@ target_compile_options(v2doc_output_transaction_tests PRIVATE
     -Wshadow
 )
 add_test(NAME output_transaction COMMAND v2doc_output_transaction_tests)
+
+add_executable(v2doc_thumbnailer_tests test_thumbnailer.cpp)
+target_link_libraries(v2doc_thumbnailer_tests PRIVATE
+    v2doc_core
+    Catch2::Catch2WithMain
+)
+target_compile_options(v2doc_thumbnailer_tests PRIVATE
+    -Wall
+    -Wextra
+    -Wpedantic
+    -Wconversion
+    -Wshadow
+)
+add_test(NAME thumbnailer COMMAND v2doc_thumbnailer_tests)

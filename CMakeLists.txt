@@ -26,6 +26,7 @@ add_library(v2doc_core
     src/process.cpp
     src/report.cpp
     src/segment_merger.cpp
+    src/thumbnailer.cpp
 )
 target_include_directories(v2doc_core PUBLIC
     "${PROJECT_SOURCE_DIR}/include"
