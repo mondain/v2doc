@@ -14,6 +14,7 @@ add_library(v2doc_core
     src/audio.cpp
     src/cli.cpp
     src/process.cpp
+    src/segment_merger.cpp
 )
 target_include_directories(v2doc_core PUBLIC
     "${PROJECT_SOURCE_DIR}/include"

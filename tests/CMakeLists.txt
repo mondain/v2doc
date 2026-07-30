@@ -50,3 +50,17 @@ target_compile_options(v2doc_audio_tests PRIVATE
     -Wshadow
 )
 add_test(NAME audio COMMAND v2doc_audio_tests)
+
+add_executable(v2doc_segment_merger_tests test_segment_merger.cpp)
+target_link_libraries(v2doc_segment_merger_tests PRIVATE
+    v2doc_core
+    Catch2::Catch2WithMain
+)
+target_compile_options(v2doc_segment_merger_tests PRIVATE
+    -Wall
+    -Wextra
+    -Wpedantic
+    -Wconversion
+    -Wshadow
+)
+add_test(NAME segment_merger COMMAND v2doc_segment_merger_tests)
